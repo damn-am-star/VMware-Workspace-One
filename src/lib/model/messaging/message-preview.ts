@@ -46,6 +46,13 @@ export function previewFromMessage(
 				albumId: message.body.albumId,
 				imageHash: null,
 			};
+        case "ProfilePhotoReply": 
+            return {
+				type: "Image",
+				text: message.body.photoContentReply,
+				albumId: null,
+				imageHash: message.body.imageHash,
+			};
 		case "ExpiringImage":
 		default:
 			return {
