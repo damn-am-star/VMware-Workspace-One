@@ -47,6 +47,7 @@ import {
 import { demoReceivedTaps, demoViews } from "./mock/interest";
 import { profileSeed } from "./mock/profiles";
 import { demoGenders, demoPronouns, demoTags } from "./mock/reference";
+import { demoRightNowFeed } from "./mock/right-now";
 import {
 	demoAccountPreferences,
 	demoSetAccountPreferences,
@@ -329,6 +330,9 @@ export function demoRoute({
 			return ok({});
 		}
 		return ok(demoAccountPreferences());
+	}
+	if (method === "GET" && rawPath.startsWith("/v4/rightnow/feed")) {
+		return ok(demoRightNowFeed(params));
 	}
 
 	return ok({});
