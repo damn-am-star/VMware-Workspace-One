@@ -11,6 +11,8 @@ import { lastOnlineOf, onlineUntilOf, photosOf, profileSeed } from "./profiles";
 type DemoMessage = { fromMe: boolean; reactions?: number } & (
 	| { kind?: "text"; text: string }
 	| { kind: "image" }
+	| { kind: "location" }
+	| { kind: "profilePhoto"; text: string }
 	| { kind: "expiringImage"; expired?: boolean }
 	| {
 			kind: "album";
@@ -136,7 +138,6 @@ const demoConversationSeeds: DemoConversation[] = [
 			{ fromMe: false, text: "🐻 lorem ipsum", reactions: 2 },
 		],
 	},
-
 	{
 		withId: 100333,
 		unread: 0,
@@ -148,6 +149,43 @@ const demoConversationSeeds: DemoConversation[] = [
 			fromMe: i % 3 === 0,
 			text: `Backlog message ${i + 1}`,
 		})),
+	},
+	{
+		withId: 100011,
+		unread: 0,
+		pinned: false,
+		favorite: false,
+		muted: false,
+		lastActivityAgo: 1,
+		messages: [
+			{ fromMe: false, text: "hello" },
+			{ fromMe: true, text: "hello" },
+			{
+				fromMe: true,
+				kind: "profilePhoto",
+				text: "nice photo!",
+				reactions: 1,
+			},
+			{
+				fromMe: false,
+				kind: "profilePhoto",
+				text: "I like your profile photo as well",
+			},
+		],
+	},
+	{
+		withId: 100015,
+		unread: 0,
+		pinned: false,
+		favorite: false,
+		muted: false,
+		lastActivityAgo: 1,
+		messages: [
+			{ fromMe: false, text: "My favorite park is here:" },
+			{ fromMe: false, kind: "location", reactions: 1 },
+			{ fromMe: true, text: "Nice. I also like it!" },
+			{ fromMe: true, kind: "location" },
+		],
 	},
 ];
 
@@ -285,6 +323,23 @@ function buildMessage({
 		}
 		case "unsent":
 			return { type: "Unsent", body: null, ...base, unsent: true };
+		case "profilePhoto":
+			return {
+				type: "ProfilePhotoReply",
+				body: {
+					photoContentReply: message.text,
+					imageHash: hashFromSeed(`msg-${conv.withId}-${index}`),
+				},
+				...base,
+				unsent: false,
+			};
+		case "location":
+			return {
+				type: "Location",
+				body: { lat: 52.5138, lon: 13.35928 },
+				...base,
+				unsent: false,
+			};
 		default:
 			return {
 				type: "Text",

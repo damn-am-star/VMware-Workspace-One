@@ -46,8 +46,8 @@ export function previewFromMessage(
 				albumId: message.body.albumId,
 				imageHash: null,
 			};
-        case "ProfilePhotoReply": 
-            return {
+		case "ProfilePhotoReply":
+			return {
 				type: "Image",
 				text: message.body.photoContentReply,
 				albumId: null,
@@ -72,6 +72,7 @@ export function previewLabel(
 	if (text !== null) return text;
 	if ((preview.albumId ?? null) !== null) return "Album";
 	if (preview.type === "ExpiringImage") return "Expiring photo";
+	if (preview.type === "Location") return "Location shared";
 	if ((preview.imageHash ?? null) !== null || preview.type === "Image") {
 		return "Photo";
 	}
