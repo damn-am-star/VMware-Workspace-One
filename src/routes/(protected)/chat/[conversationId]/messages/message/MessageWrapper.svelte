@@ -14,14 +14,14 @@
 	let {
 		clone = false,
 		quoted,
-        quotedProfileImageHash,
+		quotedProfileImageHash,
 		setRefs,
 		adornments,
 		children,
 	}: {
 		clone?: boolean;
 		quoted?: QuotedMessage | null;
-        quotedProfileImageHash?: string | null;
+		quotedProfileImageHash?: string | null;
 		setRefs: (refs: MessageRefs) => void;
 		adornments?: Snippet;
 		children: Snippet;
@@ -56,8 +56,8 @@
 >
 	{#if quoted}
 		<MessageQuote {quoted} />
-    {:else if quotedProfileImageHash}
-        <ProfileImageQuote imageHash={quotedProfileImageHash} />
+	{:else if quotedProfileImageHash}
+		<ProfileImageQuote imageHash={quotedProfileImageHash} />
 	{/if}
 	{@render children()}
 </div>

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { getMessageContext, getMessageMetaContext } from "./context";
-    import MediaImage from "$lib/components/shared/MediaImage.svelte";
-    import { profileMediaUrl } from "$lib/util/media";
+	import MediaImage from "$lib/components/shared/MediaImage.svelte";
+	import { profileMediaUrl } from "$lib/util/media";
 
-    let { imageHash }: { imageHash: string } = $props();
+	let { imageHash }: { imageHash: string } = $props();
 
 	const { isOut } = $derived(getMessageContext()());
 	const { clone } = $derived(getMessageMetaContext()());
 
-    const src = $derived(profileMediaUrl({mediaHash: imageHash, size: "thumb"}));
+	const src = $derived(profileMediaUrl({mediaHash: imageHash, size: "thumb"}));
 	
 </script>
 
@@ -35,10 +35,10 @@
 	<span
 		class="mx-1 min-w-0 rounded-xl bg-muted px-3 py-1.5 text-sm text-muted-foreground"
 	>
-        <span class="line-clamp-1">Profile photo</span>
-        <MediaImage
-            {src}
-            class="max-w-25 mb-1"
-        />
+		<span class="line-clamp-1">Profile photo</span>
+		<MediaImage
+			{src}
+			class="max-w-25 mb-1"
+		/>
 	</span>
 </div>
