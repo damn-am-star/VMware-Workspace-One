@@ -9,6 +9,7 @@
 	import RevealMessageReadSetting from "./RevealMessageReadSetting.svelte";
 	import RevealProfileViewSetting from "./RevealProfileViewSetting.svelte";
 	import StayOnlineSetting from "./StayOnlineSetting.svelte";
+	import ThemeSetting from "./ThemeSetting.svelte";
 	import UnitsSetting from "./UnitsSetting.svelte";
 </script>
 
@@ -47,6 +48,7 @@
 {/snippet}
 <h2>Display</h2>
 <UnitsSetting />
+<ThemeSetting />
 {@render item({
 	title: "Notifications",
 	unimplemented: { feature: "Notifications", issue: 45 },

@@ -4,6 +4,7 @@ import z from "zod";
 
 import { gridSearchFiltersSchema } from "$lib/model/browse/grid/filters";
 import { geohashSchema } from "$lib/model/geohash";
+import { themeSchema } from "$lib/util/themes";
 import { unitSystemSchema } from "$lib/util/units";
 import {
 	existsAppDataFile,
@@ -21,6 +22,7 @@ const preferencesSchema = z.object({
 	revealProfileViews: z.boolean().default(false),
 	stayOnline: z.boolean().default(true),
 	units: unitSystemSchema.default("metric"),
+	theme: themeSchema.default("classic"),
 });
 
 type Preferences = z.infer<typeof preferencesSchema>;

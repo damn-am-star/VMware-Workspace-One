@@ -72,6 +72,20 @@
 		preferencesLoaded() && getPreferencesSnapshot().onboardingComplete,
 	);
 
+	let previousThemeClass = "";
+	$effect(() => {
+		if (typeof document === "undefined" || !preferencesLoaded()) {
+			return;
+		}
+		const currentTheme = getPreferencesSnapshot().theme;
+		const newThemeClass = `theme-${currentTheme}`;
+		if (previousThemeClass && previousThemeClass !== newThemeClass) {
+			document.body.classList.remove(previousThemeClass);
+		}
+		document.body.classList.add(newThemeClass);
+		previousThemeClass = newThemeClass;
+	});
+
 	$effect(() => {
 		if (!onboarded) return;
 		if (!updatesSelfManaged()) return;

@@ -40,11 +40,24 @@
 	--sidebar-ring: oklch(0.556 0 0);
 	--message-bubble-in: oklch(0.7882 0.1455 228.36);
 	--message-bubble-out: oklch(0.8618 0.1973 89.76);
+	--message-body-in: oklch(0% 0 0);
+	--message-body-out: oklch(0% 0 0);
 	--list-rail: 117px;
 	--safe-area-top: 0px;
 	--safe-area-bottom: 0px;
 	--safe-area-left: 0px;
 	--safe-area-right: 0px;
+}
+.theme-sky {
+	--accent: oklch(56.7% 0.214 258.5);
+	--primary: oklch(56.7% 0.214 258.5);
+	--primary-foreground: oklch(98.4% 0.016 206.4);
+	--accent: oklch(56.7% 0.214 258.5);
+	--accent-foreground: oklch(98.4% 0.016 206.4);
+	--message-bubble-out: oklch(60.1% 0.219 257.8);
+	--message-body-out: oklch(98.4% 0.016 206.4);
+	--message-bubble-in: oklch(94.1% 0.005 286.3);
+	--message-body-in: oklch(0% 0 0);
 }
 
 @theme inline {
@@ -83,6 +96,8 @@
 	--color-background: var(--background);
 	--color-message-bubble-in: var(--message-bubble-in);
 	--color-message-bubble-out: var(--message-bubble-out);
+	--color-message-body-in: var(--message-body-in);
+	--color-message-body-out: var(--message-body-out);
 	--radius-sm: calc(var(--radius) * 0.6);
 	--radius-md: calc(var(--radius) * 0.8);
 	--radius-lg: var(--radius);
