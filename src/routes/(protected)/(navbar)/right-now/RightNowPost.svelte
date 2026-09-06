@@ -12,6 +12,7 @@
 	import MediaImage from "$lib/components/shared/MediaImage.svelte";
 	import RelativeTimeDynamic from "$lib/components/shared/RelativeTimeDynamic.svelte";
 	import Button from "$lib/components/ui/button/button.svelte";
+	import { proxyMediaUrl } from "$lib/util/media";
 	import { formatDistance } from "$lib/util/units";
 	import type { FeedPostMedia } from "$lib/right-now/posts";
 	import RightNowAvatar from "./RightNowAvatar.svelte";
@@ -103,7 +104,7 @@
 			<div class="mt-2 flex flex-col items-start gap-1">
 				{#each media as image (image.fullImageUrl)}
 					<MediaImage
-						src={image.thumbnailUrl}
+						src={proxyMediaUrl(image.thumbnailUrl)}
 						loading="lazy"
 						aspectRatio="1 / 1"
 						class="w-full max-w-3xs rounded-md"
