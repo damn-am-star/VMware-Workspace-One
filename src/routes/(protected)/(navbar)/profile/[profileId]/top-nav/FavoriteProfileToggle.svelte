@@ -47,7 +47,7 @@
 			submitting = false;
 		}
 	}}
-	variant="secondary"
+	variant="ghost"
 	aria-checked={isFavorite}
 	role="switch"
 	aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}

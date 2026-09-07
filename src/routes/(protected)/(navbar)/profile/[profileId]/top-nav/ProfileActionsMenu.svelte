@@ -30,7 +30,7 @@
 		{#snippet child({ props: { class: className, ...props } })}
 			<Button
 				size="icon-lg"
-				variant="secondary"
+				variant="ghost"
 				aria-label="Profile menu"
 				class={[className, "size-12"]}
 				disabled={submitting}

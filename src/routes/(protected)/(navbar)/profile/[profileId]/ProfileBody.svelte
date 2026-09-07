@@ -95,6 +95,13 @@
 		socialNetworks,
 		medias,
 	} = profile}
+	<ProfileTopNavBar
+		ourProfileId={profileState.ourProfileId}
+		{profile}
+		onBlocked={() => profileState.markBlocked()}
+		onHidden={() => profileState.markHidden()}
+		onFavorite={(isFavorite) => profileState.setFavorite(isFavorite)}
+	/>
 	<ImageCarousel {medias} />
 	{#if !ourProfile && profile.isFavorite && profileState.note}
 		<FavoriteNoteButton
@@ -103,13 +110,6 @@
 			onSave={(note) => profileState.setNote(note)}
 		/>
 	{/if}
-	<ProfileTopNavBar
-		ourProfileId={profileState.ourProfileId}
-		{profile}
-		onBlocked={() => profileState.markBlocked()}
-		onHidden={() => profileState.markHidden()}
-		onFavorite={(isFavorite) => profileState.setFavorite(isFavorite)}
-	/>
 	<div
 		class={[
 			"flex flex-col p-4",

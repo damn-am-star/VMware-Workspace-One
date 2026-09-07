@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { ArrowLeftIcon } from "phosphor-svelte";
+
+	import { Button } from "$lib/components/ui/button";
 	import EditProfileButton from "./EditProfileButton.svelte";
 	import FavoriteProfileToggle from "./FavoriteProfileToggle.svelte";
 	import ProfileActionsMenu from "./ProfileActionsMenu.svelte";
@@ -22,16 +25,28 @@
 </script>
 
 <nav
-	class="absolute right-2 flex -translate-y-1/2 flex-row-reverse items-center gap-1.5"
+	class="fixed top-0 z-1 mx-auto flex w-full max-w-200 flex-row items-center justify-between gap-1.5 bg-linear-to-b from-black to-transparent px-2 pt-(--safe-area-top) pb-4"
 >
-	{#if isOurProfile}
-		<EditProfileButton />
-	{:else}
-		<FavoriteProfileToggle
-			{profileId}
-			isFavorite={profile.isFavorite}
-			{onFavorite}
-		/>
-		<ProfileActionsMenu {profileId} {onBlocked} {onHidden} />
-	{/if}
+	<div>
+		<Button
+			size="icon-lg"
+			onclick={() => history.back()}
+			variant="ghost"
+			aria-label="Back"
+		>
+			<ArrowLeftIcon class="size-6" />
+		</Button>
+	</div>
+	<div class="flex flex-row-reverse items-center gap-1.5">
+		{#if isOurProfile}
+			<EditProfileButton />
+		{:else}
+			<FavoriteProfileToggle
+				{profileId}
+				isFavorite={profile.isFavorite}
+				{onFavorite}
+			/>
+			<ProfileActionsMenu {profileId} {onBlocked} {onHidden} />
+		{/if}
+	</div>
 </nav>
