@@ -20,6 +20,7 @@
 		relationshipStatuses,
 		tribes,
 	} from "$lib/model/users/profiles";
+	import { nearestScrollableAncestor } from "$lib/util/scroll";
 	import AboutMe from "./AboutMe.svelte";
 	import ProfileBottomNavBar from "./bottom-nav/ProfileBottomNavBar.svelte";
 	import Distance from "./Distance.svelte";
@@ -39,6 +40,30 @@
 	import ProfileTopNavBar from "./top-nav/ProfileTopNavBar.svelte";
 
 	let { profileState }: { profileState: ProfileState } = $props();
+
+	let carouselElement: HTMLElement | null = $state(null);
+	let profileDetailsOnTop: boolean = $state(false);
+
+	$effect(() => {
+		if (!carouselElement) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0];
+				if (!entry) return;
+				profileDetailsOnTop = !entry.isIntersecting;
+			},
+			{
+				threshold: 0,
+				root: nearestScrollableAncestor(carouselElement),
+				rootMargin: "-32px 0px 0px 0px",
+			},
+		);
+
+		observer.observe(carouselElement);
+
+		return () => observer.disconnect();
+	});
 
 	const profile = $derived(profileState.profile);
 	const ourProfile = $derived(profileState.isOurProfile);
@@ -97,12 +122,15 @@
 	} = profile}
 	<ProfileTopNavBar
 		ourProfileId={profileState.ourProfileId}
+		darkBackground={profileDetailsOnTop}
 		{profile}
 		onBlocked={() => profileState.markBlocked()}
 		onHidden={() => profileState.markHidden()}
 		onFavorite={(isFavorite) => profileState.setFavorite(isFavorite)}
 	/>
-	<ImageCarousel {medias} />
+	<div bind:this={carouselElement}>
+		<ImageCarousel {medias} />
+	</div>
 	{#if !ourProfile && profile.isFavorite && profileState.note}
 		<FavoriteNoteButton
 			profileId={profile.profileId}

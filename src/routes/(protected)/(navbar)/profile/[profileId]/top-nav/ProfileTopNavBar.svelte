@@ -9,12 +9,14 @@
 	let {
 		ourProfileId,
 		profile,
+		darkBackground = false,
 		onBlocked,
 		onHidden,
 		onFavorite,
 	}: {
 		ourProfileId: number;
 		profile: import("$lib/model/users/profiles").Profile;
+		darkBackground: boolean;
 		onBlocked: () => void;
 		onHidden: () => void;
 		onFavorite: (isFavorite: boolean) => void;
@@ -25,7 +27,11 @@
 </script>
 
 <nav
-	class="fixed top-0 z-1 mx-auto flex w-full max-w-200 flex-row items-center justify-between gap-1.5 bg-linear-to-b from-black to-transparent px-2 pt-(--safe-area-top) pb-4"
+	class={[
+		"fixed top-0 z-1 mx-auto flex w-full max-w-200 flex-row items-center justify-between gap-1.5 bg-linear-to-b px-2 pt-(--safe-area-top) pb-4 ",
+		{ "from-black to-transparent": !darkBackground },
+		{ "from-black via-black to-transparent": darkBackground },
+	]}
 >
 	<div>
 		<Button
