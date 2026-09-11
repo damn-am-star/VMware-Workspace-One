@@ -5,7 +5,6 @@
 		HouseIcon,
 		NavigationArrowIcon,
 	} from "phosphor-svelte";
-	import { untrack } from "svelte";
 
 	import { getPreferencesSnapshot } from "$lib/app-data/preferences.svelte";
 	import DistanceFormatted from "$lib/components/profile/DistanceFormatted.svelte";
@@ -44,39 +43,6 @@
 	const conversationId = $derived(
 		[profileId, ourProfileId].toSorted((a, b) => a - b).join(":"),
 	);
-
-	interface ImageState {
-		width: number | undefined;
-		height: number | undefined;
-		loaded: boolean;
-	}
-
-	let mediaStates = $state<ImageState[]>(
-		untrack(() =>
-			media.map(() => ({
-				width: undefined,
-				height: undefined,
-				loaded: false,
-			})),
-		),
-	);
-
-	$effect(() => {
-		const targetLength = media.length;
-		untrack(() => {
-			if (mediaStates.length !== targetLength) {
-				mediaStates = media.map((_, i) => {
-					return (
-						mediaStates[i] ?? {
-							width: undefined,
-							height: undefined,
-							loaded: false,
-						}
-					);
-				});
-			}
-		});
-	});
 
 	const units = $derived(getPreferencesSnapshot().units);
 
