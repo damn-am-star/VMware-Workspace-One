@@ -10,7 +10,6 @@ import { RightNowSearchFiltersState } from "./right-now-filters-state.svelte";
 class RightNowState {
 	filters = new RightNowSearchFiltersState({
 		onQueryChange: () => {
-			console.log(11);
 			this.refresh();
 		},
 	});
