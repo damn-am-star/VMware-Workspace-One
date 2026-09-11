@@ -20,7 +20,7 @@
 		<div class="flex gap-2">
 			<Button
 				variant="outline"
-				onclick={() => rightNowState.filters.resetFilters()}
+				onclick={() => rightNowState.filters.reset()}
 			>
 				Reset filters
 			</Button>

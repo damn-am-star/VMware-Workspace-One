@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { arrayOfKnownVariants } from "$lib/model/tolerance";
+
 export const PostDataSchema = z.object({
 	"@type": z.string(),
 	id: z.int(),
@@ -77,7 +79,10 @@ export const RightNowFeedResponseItemSchema = z.discriminatedUnion("type", [
 ]);
 
 export const RightNowFeedResponseSchema = z.object({
-	items: z.array(RightNowFeedResponseItemSchema),
+	items: arrayOfKnownVariants({
+		variants: RightNowFeedResponseItemSchema,
+		label: "rightnow",
+	}),
 	viewerCount: z.int(),
 });
 
