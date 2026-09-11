@@ -2,17 +2,17 @@ import z from "zod";
 
 export const PostDataSchema = z.object({
 	"@type": z.string(),
-	id: z.number().int(),
-	profileId: z.number().int(),
+	id: z.int(),
+	profileId: z.int(),
 	mediaHash: z.string().optional(),
 	displayName: z.string().optional(),
 	media: z.array(z.lazy(() => RightNowPostMediaItemSchema)),
 	text: z.string().optional(),
-	distance: z.number().int().optional(),
+	distance: z.int().optional(),
 	hosting: z.boolean(),
-	posted: z.number().int(),
-	expiration: z.number().int(),
-	onlineUntil: z.number().int().optional(),
+	posted: z.int(),
+	expiration: z.int(),
+	onlineUntil: z.int().optional(),
 	mpuScore: z.number().optional(),
 	recentlyChatted: z.boolean(),
 	favorite: z.boolean(),
@@ -21,7 +21,7 @@ export const PostDataSchema = z.object({
 export const RightNowPostMediaItemSchema = z.object({
 	type: z.string(),
 	data: z.object({
-		mediaId: z.number().int(),
+		mediaId: z.int(),
 		thumbnailUrl: z.url(),
 		fullImageUrl: z.url(),
 		contentType: z.string(),
@@ -78,7 +78,7 @@ export const RightNowFeedResponseItemSchema = z.discriminatedUnion("type", [
 
 export const RightNowFeedResponseSchema = z.object({
 	items: z.array(RightNowFeedResponseItemSchema),
-	viewerCount: z.number().int(),
+	viewerCount: z.int(),
 });
 
 export type PostData = z.infer<typeof PostDataSchema>;

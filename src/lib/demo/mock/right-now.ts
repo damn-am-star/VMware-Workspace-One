@@ -85,7 +85,7 @@ function imageUrlsOf(mediaId: number) {
 	};
 }
 
-function imediaOf(profileId: number): RightNowPostMediaItem[] {
+function mediaOf(profileId: number): RightNowPostMediaItem[] {
 	if (profileId % 3 !== 0) {
 		return [];
 	}
@@ -147,7 +147,7 @@ function createPost(profileId: number) {
 			mediaHash: photosOf(profileId)[0],
 			displayName: seed.name ?? undefined,
 			distance: distanceOf(profileId),
-			media: imediaOf(profileId),
+			media: mediaOf(profileId),
 			text: textOf(profileId),
 			hosting: hosting(profileId),
 			posted: postedOf(profileId),

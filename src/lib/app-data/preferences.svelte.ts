@@ -137,6 +137,7 @@ const accountPreferenceKeys = [
 	"autoUpdateLocation",
 	"geohash",
 	"gridSearchFilters",
+	"rightNowFilters",
 ] as const;
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {

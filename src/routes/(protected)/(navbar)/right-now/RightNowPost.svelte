@@ -92,7 +92,10 @@
 	});
 </script>
 
-<article class="flex w-full gap-4 text-gray-400" aria-label={postAriaLabel}>
+<article
+	class="flex w-full gap-4 text-muted-foreground"
+	aria-label={postAriaLabel}
+>
 	<div>
 		<RightNowAvatar {profileId} {displayName} {mediaHash} {onlineUntil} />
 	</div>

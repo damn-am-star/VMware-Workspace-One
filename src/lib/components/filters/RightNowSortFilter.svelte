@@ -26,7 +26,7 @@
 		<div class="flex items-center gap-2 font-semibold">
 			<RulerIcon class="size-5" />
 			<span>Distance</span>
-			<span class="font-normal text-gray-400">(Default)</span>
+			<span class="font-normal text-muted-foreground">(Default)</span>
 		</div>
 	</RadioItem>
 

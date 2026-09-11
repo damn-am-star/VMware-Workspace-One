@@ -31,7 +31,7 @@
 	<div
 		class={[
 			"flex shrink-0",
-			{ "text-green-500": online, "text-gray-400": !online },
+			{ "text-green-500": online, "text-muted-foreground": !online },
 			className,
 		]}
 		{title}

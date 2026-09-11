@@ -1,6 +1,8 @@
 import z from "zod";
 
 import {
+	AGE_MAX,
+	AGE_MIN,
 	filterAgeEnabledSchema,
 	filterAgeSchema,
 	filterPositionEnabledSchema,
@@ -25,7 +27,7 @@ export const rightNowFiltersSchema = z.object({
 	hosting: filterHostingSchema.default(false),
 
 	ageEnabled: filterAgeEnabledSchema.default(false),
-	age: filterAgeSchema.default([18, 102]),
+	age: filterAgeSchema.default([AGE_MIN, AGE_MAX]),
 
 	positionEnabled: filterPositionEnabledSchema.default(false),
 	positions: filterPositionSchema.default([]),
