@@ -58,6 +58,10 @@
 	}
 </script>
 
+{#snippet label(text: string)}
+	<span class="label" data-label={text}>{text}</span>
+{/snippet}
+
 <ProgressiveBlur
 	direction="bottomToTop"
 	tag="nav"
@@ -80,7 +84,7 @@
 			onclick={tabNavigation({ href: "/" })}
 		>
 			<DotsNineIcon weight="fill" />
-			Browse
+			{@render label("Browse")}
 		</a>
 		<a
 			href="/right-now"
@@ -88,7 +92,7 @@
 			onclick={tabNavigation({ href: "/right-now" })}
 		>
 			<DropIcon weight="fill" />
-			Right Now
+			{@render label("Right Now")}
 		</a>
 		<a
 			href="/interest"
@@ -101,7 +105,7 @@
 			})}
 		>
 			<FireIcon weight="fill" />
-			Interest
+			{@render label("Interest")}
 			{#if hasUnseenTaps}
 				<Badge
 					class="absolute inset-e-2 top-1 size-2.5 rounded-full p-0"
@@ -114,7 +118,7 @@
 			onclick={tabNavigation({ href: "/chat" })}
 		>
 			<ChatCircleIcon weight="fill" />
-			Inbox
+			{@render label("Inbox")}
 			{#if hasUnread}
 				<Badge
 					class="absolute inset-e-2 top-1 size-2.5 rounded-full p-0"
@@ -127,7 +131,7 @@
 		aria-label="Me"
 		onclick={tabNavigation({ href: "/settings" })}
 		class={[
-			"flex size-14 shrink-0 rounded-full border bg-muted p-1",
+			"flex size-14 shrink-0 rounded-full border bg-muted p-1 transition-colors motion-reduce:transition-none",
 			{
 				"border-2 border-accent":
 					page.route.id === "/(protected)/(navbar)/settings/(me)",
@@ -153,6 +157,17 @@
 	@reference "$layout";
 
 	.links a {
-		@apply relative inline-flex h-[calc(100%-1px)] flex-1 flex-col items-center justify-center gap-0.5 rounded-full border border-transparent! px-3 py-1 text-xs whitespace-nowrap text-foreground/60 group-data-vertical/tabs:rounded-2xl group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5 hover:bg-input/20 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 dark:text-muted-foreground dark:hover:bg-input/20 data-active:font-medium data-active:text-foreground dark:data-active:border-input dark:data-active:text-accent [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4;
+		@apply relative inline-flex h-[calc(100%-1px)] flex-1 flex-col items-center justify-center gap-0.5 rounded-full border border-transparent! px-3 py-1 text-xs whitespace-nowrap text-foreground/60 transition-colors group-data-vertical/tabs:rounded-2xl group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5 hover:bg-input/20 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none dark:text-muted-foreground dark:hover:bg-input/20 data-active:font-medium data-active:text-foreground dark:data-active:border-input dark:data-active:text-accent [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4;
+	}
+
+	/* The active tab's label turns medium weight. A hidden medium copy keeps
+	   every label at that width, so selecting a tab never shifts the others. */
+	.label {
+		@apply flex flex-col items-center;
+	}
+
+	.label::after {
+		@apply invisible h-0 overflow-hidden font-medium select-none;
+		content: attr(data-label);
 	}
 </style>
