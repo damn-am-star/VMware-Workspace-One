@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { demoRoute } from "$lib/demo";
+import { demoEvents } from "$lib/demo/events";
+import {
+	demoConversationMessages,
+	demoMessagesById,
+} from "$lib/demo/mock/conversations";
 import {
 	albumContentProcessingResponseSchema,
 	albumNameResponseSchema,
@@ -8,6 +13,7 @@ import {
 	albumStorageLimitsSchema,
 	myAlbumsResponseSchema,
 } from "$lib/model/messaging/albums";
+import { apiResponseMessageSchema } from "$lib/model/messaging/messages";
 
 const route = ({
 	path,
@@ -20,6 +26,57 @@ const route = ({
 }) => demoRoute({ path, method, body }).body;
 
 describe("demo albums", () => {
+	it.each(["INDEFINITE", "ONCE", "TEN_MINUTES", "ONE_HOUR", "ONE_DAY"])(
+		"sharing an album emits and retains a chat message with %s expiration",
+		(expirationType) => {
+			let emitted: unknown;
+			const receive = (event: Event) => {
+				emitted = (event as CustomEvent<{ payload: unknown }>).detail
+					.payload;
+			};
+			demoEvents.addEventListener("chat.v1.message_sent", receive);
+			try {
+				route({
+					path: "/v4/albums/900/shares",
+					method: "POST",
+					body: { profiles: [{ profileId: 100009, expirationType }] },
+				});
+			} finally {
+				demoEvents.removeEventListener("chat.v1.message_sent", receive);
+			}
+			const message = apiResponseMessageSchema.parse(emitted);
+			expect(message).toMatchObject({
+				conversationId: "100009:123456000",
+				senderId: 123456000,
+				type:
+					expirationType === "ONCE"
+						? "ExpiringAlbumV2"
+						: expirationType === "INDEFINITE"
+							? "Album"
+							: "ExpiringAlbum",
+				body: {
+					albumId: 900,
+					expirationType,
+					expiresAt:
+						expirationType === "INDEFINITE"
+							? null
+							: expect.any(Number),
+				},
+			});
+			expect(
+				demoConversationMessages({
+					conversationId: message.conversationId,
+				}).messages[0],
+			).toEqual(message);
+			expect(
+				demoMessagesById({
+					conversationId: message.conversationId,
+					messageIds: [message.messageId],
+				}).messages,
+			).toEqual([message]);
+		},
+	);
+
 	it("my albums cover the states the composer tab renders", () => {
 		const { albums } = myAlbumsResponseSchema.parse(
 			route({ path: "/v1/albums" }),

@@ -6,6 +6,7 @@ import { backdropBlurCalibrationSchema } from "$lib/blur/calibration/decide";
 import { backdropBlurQualitySchema } from "$lib/blur/quality";
 import { gridSearchFiltersSchema } from "$lib/model/browse/grid/filters";
 import { geohashSchema } from "$lib/model/geohash";
+import { albumExpirationTypeSchema } from "$lib/model/messaging/albums";
 import { unitSystemSchema } from "$lib/util/units";
 import {
 	existsAppDataFile,
@@ -15,6 +16,9 @@ import {
 } from ".";
 
 const preferencesSchema = z.object({
+	albumShareExpiration: albumExpirationTypeSchema
+		.default("INDEFINITE")
+		.catch("INDEFINITE"),
 	autoUpdateLocation: z.boolean().default(false),
 	backdropBlurCalibration: backdropBlurCalibrationSchema
 		.nullable()

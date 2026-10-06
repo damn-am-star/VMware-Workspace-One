@@ -17,6 +17,28 @@ const OTHER_CONVERSATION = "/chat/100009:123456000";
 const LOCKED_ALBUM_MESSAGE = '[data-slot="locked-album"]';
 
 test.describe("composer albums tab", () => {
+	test("sharing an expiring album adds a message to the conversation", async ({
+		page,
+	}) => {
+		await serveImages(page, CHAT_MEDIA_HOST);
+		await installTauriShim(page);
+		await page.goto(OTHER_CONVERSATION);
+		const attachment = page.getByRole("button", { name: "Add attachment" });
+		await attachment.click();
+		await page.getByRole("tab", { name: "Albums" }).click();
+		await page.locator(UNSHARED_ALBUM_TILE).first().click();
+		await page.getByRole("combobox").selectOption("ONE_HOUR");
+		await page.getByRole("button", { name: /^Share/ }).click();
+		await expect(page.locator(DRAWER)).toBeHidden();
+		await expect(
+			page.locator('[role="article"] [data-slot="album-preview"]'),
+		).toBeVisible();
+
+		await attachment.click();
+		await page.getByRole("tab", { name: "Albums" }).click();
+		await expect(page.locator(SHARED_ALBUM_TILE)).toHaveCount(1);
+	});
+
 	test("each tab arms its own action from its own selection", async ({
 		page,
 	}) => {

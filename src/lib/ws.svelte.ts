@@ -4,6 +4,8 @@ import z from "zod";
 
 import { ApiError } from "$lib/api/api-error";
 import { asAppError } from "$lib/api/methods";
+import { demoEnabled } from "$lib/demo/config";
+import { demoEvents } from "$lib/demo/events";
 import { tapTypeOrNoneSchema } from "$lib/model/interest/taps";
 import { mediaHashPublicSchema } from "$lib/model/media";
 import { apiResponseMessageSchema } from "$lib/model/messaging/messages";
@@ -274,25 +276,38 @@ class WsState {
 	): Promise<() => void> {
 		const eventTypes = Array.isArray(eventType) ? eventType : [eventType];
 		return Promise.all(
-			eventTypes.map((type) =>
-				listen<unknown>(
+			eventTypes.map((type) => {
+				const receive = (event: { payload: unknown }) => {
+					const result = schema.safeParse(event.payload);
+					if (result.success) {
+						handler(result.data);
+						return;
+					}
+					console.error(
+						`[ws] unexpected payload for ${type}:`,
+						result.error,
+						event.payload,
+					);
+					for (const rejected of this.#rejectedHandlers)
+						rejected(type);
+				};
+				const listening = listen<unknown>(
 					`grindr:${type.replaceAll(".", "_")}`,
-					(event) => {
-						const result = schema.safeParse(event.payload);
-						if (result.success) {
-							handler(result.data);
-							return;
-						}
-						console.error(
-							`[ws] unexpected payload for ${type}:`,
-							result.error,
-							event.payload,
-						);
-						for (const rejected of this.#rejectedHandlers)
-							rejected(type);
-					},
-				),
-			),
+					receive,
+				);
+				if (!demoEnabled) return listening;
+				const onDemo = (event: Event) =>
+					receive({
+						payload: (event as CustomEvent<unknown>).detail,
+					});
+				demoEvents.addEventListener(type, onDemo);
+				return listening
+					.catch(() => () => {})
+					.then((unlisten) => () => {
+						unlisten();
+						demoEvents.removeEventListener(type, onDemo);
+					});
+			}),
 		).then(
 			(unlisteners) => () =>
 				unlisteners.forEach((unlisten) => {

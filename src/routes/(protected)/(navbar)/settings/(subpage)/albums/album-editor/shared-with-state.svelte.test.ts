@@ -14,6 +14,10 @@ vi.mock("$lib/api/messaging/albums", () => ({
 	unshareAlbum: unshareAlbumMock,
 }));
 
+vi.mock("$lib/app-data/preferences.svelte", () => ({
+	preferencesSnapshot: () => ({ albumShareExpiration: "ONE_HOUR" }),
+}));
+
 import { albumShares } from "$lib/chat/album-shares.svelte";
 import { AlbumSharedWith } from "./shared-with-state.svelte";
 
@@ -93,6 +97,7 @@ describe("AlbumSharedWith", () => {
 		expect(shareAlbumMock).toHaveBeenCalledWith({
 			albumId: ALBUM_ID,
 			profileIds: [22],
+			expirationType: "ONE_HOUR",
 		});
 		expect(shares.count).toBe(2);
 	});

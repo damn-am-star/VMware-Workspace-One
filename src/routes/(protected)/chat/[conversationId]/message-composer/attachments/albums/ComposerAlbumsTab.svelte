@@ -3,12 +3,20 @@
 	import { toast } from "svelte-sonner";
 
 	import { getMyAlbums } from "$lib/api/messaging/albums";
+	import {
+		preferencesSnapshot,
+		setPreferences,
+	} from "$lib/app-data/preferences.svelte";
 	import { albumShares } from "$lib/chat/album-shares.svelte";
 	import AlbumTile from "$lib/components/album/AlbumTile.svelte";
 	import MediaGrid from "$lib/components/shared/MediaGrid.svelte";
 	import * as Empty from "$lib/components/ui/empty";
+	import {
+		type AlbumExpirationType,
+		albumExpirationTypeSchema,
+		type MyAlbum,
+	} from "$lib/model/messaging/albums";
 	import { SelectionSet } from "$lib/util/selection.svelte";
-	import type { MyAlbum } from "$lib/model/messaging/albums";
 	import { getConversationState } from "../../../conversation-state.svelte";
 	import type { TabSelection } from "../tabs";
 	import { AlbumShareActions } from "./album-share-actions.svelte";
@@ -29,6 +37,22 @@
 	let albums = $state<MyAlbum[] | null>(null);
 	let error = $state<unknown>(null);
 	let pendingUnshares = $state(0);
+	let selectedExpiration = $state<AlbumExpirationType | null>(null);
+	const expirationType = $derived(
+		selectedExpiration ?? preferencesSnapshot().albumShareExpiration,
+	);
+
+	function changeExpiration(event: Event) {
+		selectedExpiration = albumExpirationTypeSchema.parse(
+			(event.currentTarget as HTMLSelectElement).value,
+		);
+		void setPreferences({ albumShareExpiration: selectedExpiration }).catch(
+			(err: unknown) => {
+				console.error(err);
+				toast.error("Couldn't save album expiration preference");
+			},
+		);
+	}
 
 	const locked = $derived(pendingUnshares > 0);
 
@@ -95,7 +119,7 @@
 		profileId: number;
 	}) {
 		shareActions
-			.update({ albumId, profileId, shared: true })
+			.update({ albumId, profileId, shared: true, expirationType })
 			.catch((err: unknown) => {
 				console.error(err);
 				toast.error("Couldn't share album");
@@ -138,6 +162,27 @@
 		for (const albumId of albumIds) share({ albumId, profileId: target });
 	}
 </script>
+
+<label class="mb-4 flex items-center justify-between gap-3 text-sm">
+	Album expiration
+	<select
+		class="h-10 rounded-md border border-input bg-background px-3 text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+		value={expirationType}
+		onchange={changeExpiration}
+		disabled={mode === "unsharing" || locked}
+	>
+		<option value="INDEFINITE">No expiration</option>
+		<option value="ONCE">View once</option>
+		<option value="TEN_MINUTES">10 minutes</option>
+		<option value="ONE_HOUR">1 hour</option>
+		<option value="ONE_DAY">24 hours</option>
+	</select>
+</label>
+{#if mode === "sharing" && expirationType === "ONCE"}
+	<p class="mb-4 text-sm text-muted-foreground">
+		View once within 30 minutes of sharing.
+	</p>
+{/if}
 
 <MediaGrid
 	items={albums}

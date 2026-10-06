@@ -31,6 +31,7 @@ import {
 } from "./mock/albums";
 import { demoBlockedUsers, demoSetBlocked } from "./mock/blocks";
 import {
+	demoAlbumSharedMessage,
 	demoConversationMessages,
 	demoConversations,
 	demoDeleteConversation,
@@ -305,6 +306,11 @@ export function demoRoute({
 			albumId: Number(segments[2]),
 			profileIds: profiles.map((profile) => profile.profileId),
 		});
+		for (const profile of profiles)
+			demoAlbumSharedMessage({
+				albumId: Number(segments[2]),
+				...profile,
+			});
 		return ok({});
 	}
 	if (

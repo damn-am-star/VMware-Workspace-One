@@ -105,6 +105,7 @@ describe("AlbumShareActions", () => {
 		expect(api.shareAlbum).toHaveBeenCalledWith({
 			albumId: 1,
 			profileIds: [PEER],
+			expirationType: undefined,
 		});
 		expect(albumShares.isSharedWith({ albumId: 1, profileId: PEER })).toBe(
 			true,
