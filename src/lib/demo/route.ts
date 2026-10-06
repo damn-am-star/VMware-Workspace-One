@@ -64,6 +64,11 @@ import {
 	demoSetHidden,
 } from "./mock/hides";
 import { demoReceivedTaps, demoViews } from "./mock/interest";
+import {
+	demoCreateSavedPhrase,
+	demoDeleteSavedPhrase,
+	demoSavedPhrases,
+} from "./mock/phrases";
 import { profileSeed } from "./mock/profiles";
 import { demoGenders, demoPronouns, demoTags } from "./mock/reference";
 import {
@@ -238,6 +243,18 @@ export function demoRoute({
 				filters: (body as Partial<InboxFilterRequest>) ?? {},
 			}),
 		);
+	}
+	if (rawPath === "/v1/chat/phrases") {
+		if (method === "GET") return ok(demoSavedPhrases());
+		if (method === "POST") return ok(demoCreateSavedPhrase(body));
+	}
+	if (
+		method === "DELETE" &&
+		rawPath.startsWith("/v3/me/prefs/phrases/") &&
+		segments.length === 5
+	) {
+		demoDeleteSavedPhrase(decodeURIComponent(segments[4]!));
+		return ok(null);
 	}
 	if (
 		method === "GET" &&

@@ -21,6 +21,7 @@
 			back: "/settings",
 			wide: true,
 		},
+		[`${base}/phrases`]: { title: "Saved Phrases", back: "/settings" },
 		[`${base}/albums/new`]: {
 			title: "New Album",
 			back: "/settings/albums",

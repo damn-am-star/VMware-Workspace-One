@@ -13,6 +13,7 @@
 		MessageDraft,
 	} from "$lib/model/messaging/messages";
 	import ComposerAttachments from "./attachments/ComposerAttachments.svelte";
+	import ComposerPhrases from "./ComposerPhrases.svelte";
 	import ComposerReplyPreview from "./ComposerReplyPreview.svelte";
 	import ComposerSubmitButton from "./ComposerSubmitButton.svelte";
 	import { setMessageComposerContext } from "./message-composer-context.svelte";
@@ -41,6 +42,27 @@
 	let textContent = $state(untrack(() => drafts.get(conversationId)));
 	let form: HTMLFormElement | null = $state(null);
 	let textInput: HTMLTextAreaElement | null = $state(null);
+	let phraseSelection: { start: number; end: number } | null = null;
+
+	function capturePhraseSelection() {
+		phraseSelection = textInput
+			? { start: textInput.selectionStart, end: textInput.selectionEnd }
+			: null;
+	}
+
+	async function insertPhrase(text: string) {
+		if (disabled) return;
+		const { start, end } = phraseSelection ?? {
+			start: textContent.length,
+			end: textContent.length,
+		};
+		textContent =
+			textContent.slice(0, start) + text + textContent.slice(end);
+		await tick();
+		textInput?.focus();
+		textInput?.setSelectionRange(start + text.length, start + text.length);
+		remeasureBeforeResizeObserverCatchesUp();
+	}
 
 	async function onSubmit() {
 		const text = textContent.trim();
@@ -118,6 +140,13 @@
 			bind:ref={textInput}
 			onEscape={onCancelReply}
 		/>
+		{#key conversationId}
+			<ComposerPhrases
+				onOpen={capturePhraseSelection}
+				onSelect={(text) => void insertPhrase(text)}
+				onFocusInput={() => textInput?.focus()}
+			/>
+		{/key}
 		{#if textContent === ""}
 			{#key conversationId}
 				<ComposerAttachments />

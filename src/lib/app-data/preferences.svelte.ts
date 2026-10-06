@@ -31,6 +31,7 @@ const preferencesSchema = z.object({
 	notificationsEnabled: z.boolean().default(false),
 	revealMessageRead: z.boolean().default(false),
 	revealProfileViews: z.boolean().default(false),
+	savedPhraseOrder: z.array(z.string()).default([]),
 	stayOnline: z.boolean().default(true),
 	units: unitSystemSchema.default("metric"),
 });
@@ -144,6 +145,7 @@ const accountPreferenceKeys = [
 	"geohash",
 	"gridSearchFilters",
 	"notificationsEnabled",
+	"savedPhraseOrder",
 ] as const;
 
 function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {

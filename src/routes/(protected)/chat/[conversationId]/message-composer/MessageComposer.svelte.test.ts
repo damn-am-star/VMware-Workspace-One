@@ -7,13 +7,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Drafts } from "$lib/chat/drafts.svelte";
 import { draftFromMessage } from "$lib/model/messaging/messages";
 
-const { conversations } = vi.hoisted(() => ({
-	conversations: { drafts: null as Drafts | null },
+const { conversations, phrasesApi } = vi.hoisted(() => ({
+	conversations: { drafts: null as Drafts | null, ourProfileId: 1 },
+	phrasesApi: { getSavedPhrases: vi.fn() },
 }));
 
 vi.mock("$app/navigation", () => ({ onNavigate: vi.fn() }));
 vi.mock("$lib/chat/conversations-context.svelte", () => ({
 	getConversations: () => conversations,
+}));
+vi.mock("$lib/api/messaging/phrases", () => phrasesApi);
+vi.mock("$lib/app-data", () => ({
+	existsAppDataFile: () => Promise.resolve(false),
+	readAppDataFile: vi.fn(),
+	removeAppDataFile: vi.fn(),
+	writeAppDataFileAtomic: vi.fn(),
 }));
 
 vi.stubGlobal(
@@ -35,6 +43,8 @@ class InstantAnimation {
 Element.prototype.animate = () =>
 	new InstantAnimation() as unknown as Animation;
 
+import { clearAccountCaches } from "$lib/api/account-caches";
+import { backGestureEventHandlers } from "$lib/platform/back-gesture-event.svelte";
 import MessageComposer from "./MessageComposer.svelte";
 
 const A = "a:1";
@@ -47,17 +57,19 @@ function renderComposer({
 	onSend = () => {},
 	replyTo = null,
 	onCancelReply = () => {},
+	disabled = false,
 }: {
 	conversationId?: string;
 	onSend?: (drafts: unknown) => void | Promise<void>;
 	replyTo?: unknown;
 	onCancelReply?: () => void;
+	disabled?: boolean;
 } = {}) {
 	const result = render(MessageComposer, {
 		props: {
 			conversationId,
 			onSend,
-			disabled: false,
+			disabled,
 			replyTo,
 			onCancelReply,
 		} as never,
@@ -177,6 +189,132 @@ describe("MessageComposer drafts", () => {
 		expect(onSend).toHaveBeenCalledWith([
 			draftFromMessage({ type: "Text", body: { text: "sending this" } }),
 		]);
+	});
+});
+
+describe("MessageComposer saved phrases", () => {
+	const PHRASE = "Hello\nthere!";
+
+	beforeEach(() => {
+		clearAccountCaches();
+		drafts = new Drafts();
+		conversations.drafts = drafts;
+		phrasesApi.getSavedPhrases
+			.mockReset()
+			.mockResolvedValue({
+				phrases: [{ id: "hello", text: PHRASE, type: "custom" }],
+			});
+	});
+
+	afterEach(() => {
+		cleanup();
+		drafts.destroy();
+		clearAccountCaches();
+	});
+
+	it.each([
+		["", 0, 0, PHRASE],
+		["meet soon", 5, 5, `meet ${PHRASE}soon`],
+		["meet later", 5, 10, `meet ${PHRASE}`],
+	])(
+		"inserts into %j at the captured selection and autosaves without sending",
+		async (draft, start, end, expected) => {
+			const onSend = vi.fn();
+			const { textarea, getByRole, findByRole, queryByRole } =
+				renderComposer({ onSend });
+			await type(textarea, draft);
+			textarea.focus();
+			textarea.setSelectionRange(start, end);
+
+			await fireEvent.click(
+				getByRole("button", { name: "Saved phrases" }),
+			);
+			const phraseButton = await findByRole(
+				"button",
+				{ name: /Hello\s+there!/ },
+				{ timeout: 3_000 },
+			);
+			// The picker takes focus; the saved selection still belongs to the draft.
+			textarea.setSelectionRange(0, 0);
+			await fireEvent.click(phraseButton);
+
+			await vi.waitFor(() => {
+				expect(textarea.value).toBe(expected);
+				expect(document.activeElement).toBe(textarea);
+				expect(textarea.selectionStart).toBe(start + PHRASE.length);
+				expect(textarea.selectionEnd).toBe(start + PHRASE.length);
+				expect(queryByRole("dialog")).toBeNull();
+			});
+			await vi.waitFor(() => expect(drafts.get(A)).toBe(expected), {
+				timeout: 2_000,
+			});
+			expect(onSend).not.toHaveBeenCalled();
+		},
+	);
+
+	it("closes the picker when the conversation changes", async () => {
+		const { getByRole, findByRole, queryByRole, rerender, textarea } =
+			renderComposer();
+		await fireEvent.click(getByRole("button", { name: "Saved phrases" }));
+		await findByRole("dialog");
+
+		await rerender({ conversationId: B });
+
+		expect(queryByRole("dialog")).toBeNull();
+		expect(textarea.value).toBe("");
+	});
+
+	it("system back dismisses the picker and preserves the draft", async () => {
+		const { getByRole, findByRole, queryByRole, textarea } =
+			renderComposer();
+		await type(textarea, "unsent draft");
+		await fireEvent.click(getByRole("button", { name: "Saved phrases" }));
+		await findByRole("dialog");
+
+		expect(backGestureEventHandlers.size).toBe(1);
+		for (const handler of backGestureEventHandlers)
+			expect(handler()).toBe(false);
+		await tick();
+
+		await vi.waitFor(() => expect(queryByRole("dialog")).toBeNull());
+		expect(textarea.value).toBe("unsent draft");
+	});
+
+	it("disables the always-visible phrase button with the composer", () => {
+		const { getByRole, queryByRole, textarea } = renderComposer({
+			disabled: true,
+		});
+		const trigger = getByRole("button", {
+			name: "Saved phrases",
+		}) as HTMLButtonElement;
+		expect(trigger.disabled).toBe(true);
+		expect(textarea.disabled).toBe(true);
+		expect(queryByRole("dialog")).toBeNull();
+		expect(phrasesApi.getSavedPhrases).not.toHaveBeenCalled();
+	});
+
+	it("shows a failed load and retries before inserting", async () => {
+		phrasesApi.getSavedPhrases.mockRejectedValueOnce(new Error("offline"));
+		const { getByRole, findByRole, textarea } = renderComposer();
+		await fireEvent.click(getByRole("button", { name: "Saved phrases" }));
+		await findByRole("alert");
+		await fireEvent.click(getByRole("button", { name: "Retry" }));
+		await fireEvent.click(
+			await findByRole("button", { name: /Hello\s+there!/ }),
+		);
+		expect(textarea.value).toBe(PHRASE);
+	});
+
+	it("shows the empty state with a link to manage phrases", async () => {
+		phrasesApi.getSavedPhrases.mockResolvedValueOnce({ phrases: [] });
+		const { getByRole, findByText } = renderComposer();
+		await fireEvent.click(getByRole("button", { name: "Saved phrases" }));
+		await findByText("No saved phrases yet.");
+		expect(
+			getByRole("link", { name: "Manage in settings" }).getAttribute(
+				"href",
+			),
+		).toBe("/settings/phrases");
 	});
 });
 

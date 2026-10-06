@@ -4,6 +4,7 @@
 	import AccountSettingsLink from "./AccountSettingsLink.svelte";
 	import AlbumsLink from "./AlbumsLink.svelte";
 	import AppSettingsLink from "./AppSettingsLink.svelte";
+	import PhrasesLink from "./PhrasesLink.svelte";
 	import ProfileLink from "./ProfileLink.svelte";
 	import SignOutButton from "./SignOutButton.svelte";
 	import Socials from "./Socials.svelte";
@@ -20,6 +21,7 @@
 			<div class="m-auto flex w-full max-w-120 flex-col gap-3">
 				<ProfileLink id={data.ourProfileId} />
 				<AlbumsLink ourProfileId={data.ourProfileId} />
+				<PhrasesLink />
 				<span role="separator"></span>
 				<AccountSettingsLink />
 				<AppSettingsLink />
