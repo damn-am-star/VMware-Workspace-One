@@ -11,17 +11,13 @@
 	import * as Tabs from "$lib/components/ui/tabs";
 	import { Toggle } from "$lib/components/ui/toggle";
 	import ComposerAlbumsTab from "./albums/ComposerAlbumsTab.svelte";
-	import ComposerUnimplementedTab from "./ComposerUnimplementedTab.svelte";
+	import ComposerLocationTab from "./location/ComposerLocationTab.svelte";
 	import ComposerMediaTab from "./media/ComposerMediaTab.svelte";
 	import type { SelectionTab, Tab, TabSelection } from "./tabs";
-
-	const FULLSIZE_TABS: Tab[] = ["media", "albums"];
 
 	let { open = $bindable() }: { open: boolean } = $props();
 
 	let selectedTab = $state<Tab>("media");
-
-	const isFullsizeTab = $derived(FULLSIZE_TABS.includes(selectedTab));
 
 	let tabs = $state<Partial<Record<Tab, SelectionTab | null>>>({});
 	let selections = $state<Partial<Record<Tab, TabSelection>>>({});
@@ -40,13 +36,10 @@
 	});
 </script>
 
-<MediaSheet bind:open fullsize={isFullsizeTab}>
+<MediaSheet bind:open>
 	<Drawer.Title class="sr-only">Attachments</Drawer.Title>
-	<Tabs.Root
-		bind:value={selectedTab}
-		class={["min-h-0 gap-0", { "h-full": isFullsizeTab }]}
-	>
-		<MediaSheetBody fullsize={isFullsizeTab}>
+	<Tabs.Root bind:value={selectedTab} class="h-full min-h-0 gap-0">
+		<MediaSheetBody>
 			<Tabs.Content value="media">
 				<ComposerMediaTab
 					bind:this={tabs.media}
@@ -65,7 +58,12 @@
 				/>
 			</Tabs.Content>
 			<Tabs.Content value="location">
-				<ComposerUnimplementedTab label="Sharing location" issue={35} />
+				<ComposerLocationTab
+					bind:this={tabs.location}
+					onSelectionChange={(locationSelection) =>
+						(selections.location = locationSelection)}
+					onClose={() => (open = false)}
+				/>
 			</Tabs.Content>
 		</MediaSheetBody>
 

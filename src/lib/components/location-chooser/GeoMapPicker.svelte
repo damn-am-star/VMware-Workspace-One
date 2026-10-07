@@ -167,8 +167,10 @@
 			url={"https://tile.openstreetmap.org/{z}/{x}/{y}.png"}
 			options={{
 				maxZoom: 19,
+				// OSM requires a web referrer; omit private paths from it.
+				referrerPolicy: "strict-origin-when-cross-origin",
 				attribution:
-					'&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer nofollow noopener">OpenStreetMap</a> &nbsp;',
+					'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer nofollow noopener">OpenStreetMap contributors</a> &nbsp;',
 				// do not enable: https://github.com/Leaflet/Leaflet/issues/6195
 				// detectRetina: true,
 			}}

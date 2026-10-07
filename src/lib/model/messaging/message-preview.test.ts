@@ -7,6 +7,23 @@ import {
 } from "$lib/model/messaging/message-preview";
 
 describe("previewFromMessage", () => {
+	it("labels location messages in previews and quotes", () => {
+		const preview = previewFromMessage({
+			type: "Location",
+			body: { lat: 51.5074, lon: -0.1278 },
+			messageId: "location-1",
+			conversationId: "conversation-1",
+			senderId: 42,
+			timestamp: 1_710_000_000_000,
+			unsent: false,
+			reactions: [],
+			dynamic: false,
+		});
+
+		expect(previewLabel(preview)).toBe("Location");
+		expect(quoteLabel(preview)).toBe("Location");
+	});
+
 	it("extracts preview text from text messages", () => {
 		expect(
 			previewFromMessage({
@@ -159,7 +176,6 @@ describe("quoteLabel", () => {
 		["Unsent", "Unsent message"],
 		["Audio", "Voice message"],
 		["Giphy", "GIF"],
-		["Location", "Location"],
 		["NonExpiringVideo", "Video"],
 		["Unknown", "Message"],
 	])("names a %s quote rather than rendering nothing", (type, expected) => {

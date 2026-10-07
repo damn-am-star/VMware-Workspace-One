@@ -66,6 +66,7 @@ export function previewLabel(
 	const text = preview.text ?? null;
 	if (text !== null) return text;
 	if ((preview.albumId ?? null) !== null) return "Album";
+	if (preview.type === "Location") return "Location";
 	if (preview.type === "ExpiringImage") return "Expiring image";
 	if (EXPIRING_VIDEO_TYPES.has(preview.type)) return "Expiring video";
 	if ((preview.imageHash ?? null) !== null || preview.type === "Image") {
@@ -81,7 +82,6 @@ const QUOTE_LABELS: Record<string, string> = {
 	VideoCall: "Video call",
 	Gaymoji: "Gaymoji",
 	Giphy: "GIF",
-	Location: "Location",
 	ProfileLink: "Profile",
 	ProfilePhotoReply: "Photo",
 	AlbumContentReaction: "Album",

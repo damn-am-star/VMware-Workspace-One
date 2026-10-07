@@ -20,6 +20,7 @@
 	import { type MessageRefs, setMessageContext } from "./context";
 	import ExpiringImageMessage from "./ExpiringImageMessage.svelte";
 	import ImageMessage from "./ImageMessage.svelte";
+	import LocationMessage from "./LocationMessage.svelte";
 	import MessageContextMenu from "./MessageContextMenu.svelte";
 	import MessageDateGroup from "./MessageDateGroup.svelte";
 	import MessageTime from "./MessageTime.svelte";
@@ -261,6 +262,8 @@
 			<TextMessage message={message.body} />
 		{:else if message.type === "Image"}
 			<ImageMessage message={message.body} />
+		{:else if message.type === "Location"}
+			<LocationMessage message={message.body} />
 		{:else if message.type === "ExpiringImage"}
 			<ExpiringImageMessage
 				message={message.body}
