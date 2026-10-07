@@ -58,6 +58,15 @@
 
 	let map: LeafletMap | undefined = $state();
 
+	$effect(() => {
+		if (!map) return;
+		const instance = map;
+		// Tabs can mount the map before its container is visible.
+		const observer = new ResizeObserver(() => instance.invalidateSize());
+		observer.observe(instance.getContainer());
+		return () => observer.disconnect();
+	});
+
 	let pendingCenter: { lat: number; lon: number; zoom: number } | undefined =
 		$state();
 
@@ -153,7 +162,7 @@
 	});
 </script>
 
-<div class="relative h-[inherit] w-[inherit]">
+<div class="relative isolate h-[inherit] w-[inherit]">
 	<Map
 		options={{
 			center: [40.42267869390329, -3.697633348267032],
