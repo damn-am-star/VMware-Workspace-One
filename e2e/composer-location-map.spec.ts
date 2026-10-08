@@ -90,7 +90,7 @@ test("the location map stays above drawer controls after searching and panning",
 	await page.mouse.up();
 	await expect(pane).not.toHaveAttribute("style", before!);
 	const send = page.getByRole("button", {
-		name: "Send location 1",
+		name: "Send location",
 		exact: true,
 	});
 	await send.click({ trial: true });

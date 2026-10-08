@@ -74,6 +74,7 @@
 			class="bottom-18"
 			label={selection?.label ?? ""}
 			count={selection?.count ?? 0}
+			showCount={selectedTab !== "location"}
 			onSubmit={submitSelection}
 		>
 			{#snippet leading()}

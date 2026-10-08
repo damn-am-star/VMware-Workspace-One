@@ -10,6 +10,7 @@
 	let {
 		label,
 		count,
+		showCount = true,
 		disabled = false,
 		onSubmit,
 		class: className,
@@ -17,6 +18,7 @@
 	}: {
 		label: string;
 		count: number;
+		showCount?: boolean;
 		disabled?: boolean;
 		onSubmit: () => void;
 		class?: string;
@@ -37,12 +39,14 @@
 		{@render leading?.()}
 		<Button size="lg" class="shadow-lg" {disabled} onclick={onSubmit}>
 			{label}
-			<Badge
-				variant="secondary"
-				class="bg-primary-foreground/10 text-primary-foreground"
-			>
-				{count}
-			</Badge>
+			{#if showCount}
+				<Badge
+					variant="secondary"
+					class="bg-primary-foreground/10 text-primary-foreground"
+				>
+					{count}
+				</Badge>
+			{/if}
 		</Button>
 	</div>
 {/if}
