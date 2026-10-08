@@ -62,11 +62,8 @@
 	}
 </script>
 
-<p class="mb-3 text-sm text-muted-foreground">
-	Choose a point on the map to share.
-</p>
 <div
-	class="relative h-[55vh] w-full overflow-hidden rounded-lg"
+	class="relative mx-auto aspect-square w-[min(100%,calc(var(--screen-safe)-12rem))] overflow-hidden rounded-lg"
 	data-vaul-no-drag
 >
 	{#await import("$lib/components/location-chooser/GeoMapPicker.svelte")}

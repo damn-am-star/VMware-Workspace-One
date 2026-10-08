@@ -36,10 +36,13 @@
 	});
 </script>
 
-<MediaSheet bind:open>
+<MediaSheet bind:open fullsize={selectedTab !== "location"}>
 	<Drawer.Title class="sr-only">Attachments</Drawer.Title>
-	<Tabs.Root bind:value={selectedTab} class="h-full min-h-0 gap-0">
-		<MediaSheetBody>
+	<Tabs.Root
+		bind:value={selectedTab}
+		class={["min-h-0 gap-0", { "h-full": selectedTab !== "location" }]}
+	>
+		<MediaSheetBody fullsize={selectedTab !== "location"}>
 			<Tabs.Content value="media">
 				<ComposerMediaTab
 					bind:this={tabs.media}
@@ -57,7 +60,7 @@
 					onClose={() => (open = false)}
 				/>
 			</Tabs.Content>
-			<Tabs.Content value="location">
+			<Tabs.Content value="location" class="pb-12">
 				<ComposerLocationTab
 					bind:this={tabs.location}
 					onSelectionChange={(locationSelection) =>
