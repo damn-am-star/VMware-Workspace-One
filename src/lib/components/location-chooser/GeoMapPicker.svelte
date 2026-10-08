@@ -162,7 +162,7 @@
 	});
 </script>
 
-<div class="relative isolate h-[inherit] w-[inherit]">
+<div class="relative isolate h-full w-full">
 	<Map
 		options={{
 			center: [40.42267869390329, -3.697633348267032],

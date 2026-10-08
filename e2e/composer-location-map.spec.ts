@@ -46,6 +46,11 @@ test("the location map stays above drawer controls after searching and panning",
 	const marker = map.locator(".leaflet-marker-icon");
 	for (let opening = 0; opening < 2; opening++) {
 		await location.click();
+		await expect(map).toBeVisible();
+		await expect
+			.poll(async () => (await map.boundingBox())?.height ?? 0)
+			.toBeGreaterThan(200);
+		await expect(map.locator(".leaflet-tile-loaded").first()).toBeVisible();
 		await expect(marker).toBeVisible();
 		await expect
 			.poll(async () => {
