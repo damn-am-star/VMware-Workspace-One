@@ -9,10 +9,20 @@ import {
 } from "./support/app";
 import { installPersistentAppData } from "./support/app-data";
 
-test("the location map centers when revealed and stays behind drawer controls after panning", async ({
+test("the location map stays above drawer controls after searching and panning", async ({
 	page,
 }) => {
 	test.setTimeout(180_000);
+	await page.route("**/src/lib/api/browse/location.ts*", (route) =>
+		route.fulfill({
+			contentType: "application/javascript",
+			body: `export async function getPlaces() {
+				return { places: [{ name: "Berlin", address: "Germany",
+					lat: 52.52, lon: 13.405, importance: 1 }] };
+			}
+			export async function updateLocation() {}`,
+		}),
+	);
 	const tile = await sharp({
 		create: { width: 256, height: 256, channels: 3, background: "#ff00ff" },
 	})
@@ -52,6 +62,18 @@ test("the location map centers when revealed and stays behind drawer controls af
 		if (opening === 0)
 			await page.getByRole("tab", { name: "Media", exact: true }).click();
 	}
+	const initialBounds = (await map.boundingBox())!;
+	await page.getByPlaceholder("Search places...").fill("Berlin");
+	// Android resizes the webview while the search keyboard is open.
+	await page.setViewportSize({ width: 420, height: 500 });
+	await page.getByRole("button", { name: "Berlin Germany" }).click();
+	await page.setViewportSize({ width: 420, height: 800 });
+	await expect
+		.poll(async () => {
+			const bounds = (await map.boundingBox())!;
+			return Math.abs(bounds.y - initialBounds.y);
+		})
+		.toBeLessThan(3);
 	const bounds = (await map.boundingBox())!;
 	const pane = map.locator(".leaflet-map-pane");
 	const before = await pane.getAttribute("style");
